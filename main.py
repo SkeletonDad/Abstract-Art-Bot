@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from discord import Intents, Client, Message
 from discord.ext import commands
 from responses import get_response
+import vars
 
 # STEP 0: LOAD OUR TOKEN FROM SOMEWHERE SAFE
 load_dotenv()
@@ -12,6 +13,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # STEP 1: BOT SETUP
 intents: Intents = Intents.default()
 intents.message_content = True # NOQA (no quality assurance)
+intents.dm_messages = True
 intents.voice_states = True
 client: Client = Client(intents=intents)
 
@@ -55,10 +57,15 @@ async def on_message(message: Message) -> None:
 
 @client.event
 async def on_voice_state_update(member, before, after):
-    if before.channel and not after.channel:  # Member left a voice channel
-        channel = client.get_channel(744744567680794657) # ID of general channel
+    if after.channel and not before.channel and vars.alert_alex:  # Member joined a voice channel
+        user_id = member.id # member who just joined
+        user = await client.fetch_user('User\'s DM ID') #Alex's discord ID
+        await user.send(f'{member.name} Has joined the voice channel! to stop these messages say \'STOP\'')
+    
+    # If a certain user leaves the voice channel
+    elif before.channel and not after.channel and member.id == 'certain member leaving ID':
+        channel = client.get_channel('Your text channel')
         await channel.send('Who *was* that?')
-
 
 # STEP 5: MAIN ENTRY POINT
 def main() -> None:

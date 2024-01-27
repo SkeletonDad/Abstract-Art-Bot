@@ -1,4 +1,5 @@
 import random
+import vars
 
 def get_response(user_input: str) -> str:
     lowered: str = user_input.lower()
@@ -37,7 +38,10 @@ def get_response(user_input: str) -> str:
         'Witness the beauty encapsulated in this art!',
         'Behold the artistic essence presented here!']
 
-
+    if 'resume' in lowered and not vars.alert_alex:
+            vars.alert_alex = True
+            return 'I will resume messaging you now!'
+    
     if 'art' in lowered:
         rep = random.choice(art_responses)
         url = random.choice([image_url_1, image_url_2])
@@ -47,3 +51,9 @@ def get_response(user_input: str) -> str:
             image = url[:-4] + str(random.randint(2782, 2871)) + '.jpg'
 
         return f'{rep}\n{image}'
+    
+    if 'stop' in lowered and vars.alert_alex:
+        vars.alert_alex = False
+        return 'Ok, I won\'t message you until you say \'resume\''
+    
+    
